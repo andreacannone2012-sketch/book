@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d1324">
+  <title>Schoolbook Studio</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(20, 29, 50, .88);
+      --panel-2: #151f35;
+      --line: rgba(176, 194, 225, .14);
+      --muted: #91a0b9;
+      --text: #edf3ff;
+      --blue: #7ba9ff;
+      --cyan: #73e0d0;
+      --violet: #a995ff;
+      --danger: #ff8c9a;
+      --success: #70d6aa;
+      --shadow: 0 24px 70px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(900px 550px at 88% -8%, rgba(90, 108, 230, .22), transparent 65%),
+        radial-gradient(650px 450px at -8% 32%, rgba(36, 189, 176, .11), transparent 66%),
+        var(--bg);
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 26px 0 50px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:48px; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-mark {
+      width:42px; height:42px; border-radius:14px; display:grid; place-items:center;
+      background: linear-gradient(145deg, #8baeff, #7566d9); box-shadow: 0 9px 26px rgba(111,127,226,.28);
+      color:#091226;
+    }
+    .brand-mark svg { width:23px; height:23px; }
+    .brand-name { font-weight:750; letter-spacing:-.035em; font-size:17px; }
+    .brand-sub { color:var(--muted); font-size:11px; margin-top:2px; letter-spacing:.13em; text-transform:uppercase; }
+    .top-right { display:flex; align-items:center; gap:10px; }
+    .local-chip { border:1px solid var(--line); background:rgba(255,255,255,.035); border-radius:999px; padding:9px 13px; color:#b8c6dc; font-size:12px; display:flex; align-items:center; gap:8px; }
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--success); box-shadow:0 0 0 4px rgba(112,214,170,.1); }
+    .hero { display:flex; align-items:flex-end; justify-content:space-between; gap:25px; margin-bottom:28px; }
+    .eyebrow { color:#9ab6ff; text-transform:uppercase; letter-spacing:.19em; font-size:10px; font-weight:800; margin-bottom:14px; }
+    h1 { font-size:clamp(34px, 5vw, 55px); line-height:1.02; letter-spacing:-.06em; margin:0; max-width:670px; font-weight:760; }
+    h1 span { color:#a9baff; }
+    .hero-copy { color:#9aa9c2; font-size:14px; line-height:1.7; max-width:530px; margin:15px 0 0; }
+    .hero-side { color:#8f9db5; font-size:12px; line-height:1.65; max-width:190px; text-align:right; padding-bottom:4px; }
+    .hero-side strong { color:#d8e2f7; display:block; font-size:19px; letter-spacing:-.04em; }
+    .layout { display:grid; grid-template-columns: 355px minmax(0,1fr); gap:18px; align-items:start; }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow); backdrop-filter:blur(16px); overflow:hidden; }
+    .panel-head { padding:21px 22px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .panel-title { font-size:15px; font-weight:730; letter-spacing:-.02em; }
+    .step { color:#91a8d7; font-size:10px; text-transform:uppercase; letter-spacing:.13em; font-weight:800; }
+    .panel-body { padding:21px 22px 23px; }
+    .field { margin-bottom:17px; }
+    label { display:block; color:#c0cce0; font-size:12px; font-weight:650; margin:0 0 8px; }
+    .input-wrap { position:relative; }
+    input, select {
+      width:100%; min-height:47px; border:1px solid rgba(172,190,222,.18); border-radius:12px;
+      outline:none; color:var(--text); background:#10192c; padding:0 13px; transition:border-color .18s, box-shadow .18s;
+    }
+    input::placeholder { color:#687994; }
+    select { appearance:none; padding-right:40px; }
+    select option { background:#10192c; color:var(--text); }
+    input:focus, select:focus { border-color:#789cff; box-shadow:0 0 0 3px rgba(120,156,255,.12); }
+    .select-arrow { pointer-events:none; position:absolute; right:14px; top:16px; color:#91a6c8; font-size:13px; }
+    .hint { font-size:11px; color:#8191ab; line-height:1.55; margin-top:8px; }
+    .button {
+      min-height:46px; border:0; border-radius:12px; padding:0 16px; font-size:13px; font-weight:750;
+      display:inline-flex; align-items:center; justify-content:center; gap:9px; transition:transform .15s, filter .15s, opacity .15s;
+    }
+    .button:hover:not(:disabled) { transform:translateY(-1px); filter:brightness(1.07); }
+    .button:disabled { cursor:not-allowed; opacity:.45; }
+    .primary { width:100%; color:#091327; background:linear-gradient(110deg,#a7c2ff,#83e5d6); box-shadow:0 10px 24px rgba(106,169,222,.16); }
+    .secondary { color:#d4dff1; background:#202c45; border:1px solid var(--line); }
+    .ghost { min-height:34px; padding:0 11px; border-radius:9px; font-size:11px; color:#b8c7dd; background:rgba(255,255,255,.045); border:1px solid var(--line); }
+    .privacy { display:flex; gap:9px; align-items:flex-start; color:#8493ab; font-size:10px; line-height:1.5; margin-top:15px; }
+    .privacy svg { flex:0 0 14px; margin-top:1px; color:#7bd7c5; }
+    .logged { display:none; padding:13px 14px; margin-top:17px; border-radius:13px; border:1px solid rgba(112,214,170,.2); background:rgba(112,214,170,.07); }
+    .logged-top { display:flex; align-items:center; gap:8px; color:#9fe4c5; font-size:12px; font-weight:700; }
+    .logged-name { font-size:11px; color:#aab9ce; margin-top:5px; }
+    .logged button { margin-top:11px; }
+    .right-column { display:grid; gap:18px; }
+    .library-empty { min-height:370px; display:grid; place-items:center; padding:38px; text-align:center; }
+    .empty-icon { width:64px; height:64px; border-radius:20px; display:grid; place-items:center; background:rgba(133,165,255,.09); border:1px solid rgba(133,165,255,.16); color:#9bb5ff; margin:0 auto 17px; }
+    .empty-icon svg { width:28px; height:28px; }
+    .empty-title { font-size:16px; font-weight:720; }
+    .empty-copy { color:#8797b1; font-size:12px; line-height:1.7; max-width:330px; margin:8px auto 0; }
+    .library-content { display:none; }
+    .library-toolbar { padding:16px 20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--line); }
+    .search { flex:1; min-height:40px; border-radius:10px; font-size:12px; }
+    .count { white-space:nowrap; color:#91a2bc; font-size:11px; }
+    .book-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 20px; border-bottom:1px solid var(--line); }
+    .action-left { display:flex; gap:7px; align-items:center; }
+    .book-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:16px 20px 20px; max-height:450px; overflow:auto; }
+    .book-card { min-height:86px; border:1px solid var(--line); background:rgba(255,255,255,.025); border-radius:13px; padding:13px; display:flex; align-items:flex-start; gap:11px; cursor:pointer; transition:border-color .16s, background .16s; }
+    .book-card:hover { border-color:rgba(139,172,255,.45); background:rgba(139,172,255,.045); }
+    .book-card.selected { border-color:rgba(139,172,255,.7); background:rgba(139,172,255,.09); }
+    .book-card input { width:16px; height:16px; min-height:16px; flex:0 0 16px; margin:2px 0 0; accent-color:#91b1ff; padding:0; }
+    .book-info { min-width:0; }
+    .book-title { font-size:12px; font-weight:650; line-height:1.45; color:#e2eafa; overflow-wrap:anywhere; }
+    .book-meta { color:#7789a5; font-size:10px; margin-top:6px; }
+    .download-bar { padding:15px 20px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:14px; background:rgba(8,14,27,.25); }
+    .selection-note { color:#91a2bc; font-size:11px; }
+    .download-button { color:#081427; background:linear-gradient(110deg,#9ebaff,#7be0d1); min-width:190px; }
+    .jobs-panel { display:none; }
+    .jobs-head { padding:18px 21px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .jobs-list { padding:8px 20px 14px; }
+    .job { padding:14px 0; border-bottom:1px solid rgba(176,194,225,.09); }
+    .job:last-child { border-bottom:0; }
+    .job-top { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
+    .job-title { font-size:12px; font-weight:680; color:#e3ebfa; line-height:1.45; }
+    .job-status { white-space:nowrap; text-transform:uppercase; letter-spacing:.09em; font-size:9px; font-weight:800; color:#9bacbf; }
+    .job-status.completed { color:var(--success); }
+    .job-status.failed { color:var(--danger); }
+    .job-message { color:#8191aa; font-size:10px; margin-top:4px; }
+    .progress-track { background:#27334a; height:5px; border-radius:99px; overflow:hidden; margin-top:10px; }
+    .progress-fill { height:100%; width:0; border-radius:99px; background:linear-gradient(90deg,#8caeff,#74ddcb); transition:width .3s; }
+    .job-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+    .job-percent { color:#8d9db7; font-size:10px; font-variant-numeric:tabular-nums; }
+    .file-link { color:#8ce4ce; text-decoration:none; font-size:10px; font-weight:750; }
+    .file-link:hover { text-decoration:underline; }
+    .toast { position:fixed; right:22px; bottom:22px; max-width:min(420px,calc(100% - 44px)); background:#1b2941; border:1px solid rgba(167,190,230,.2); color:#edf3ff; border-radius:13px; padding:13px 16px; font-size:12px; line-height:1.55; box-shadow:var(--shadow); opacity:0; transform:translateY(10px); pointer-events:none; transition:all .2s; z-index:20; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .toast.error { border-color:rgba(255,140,154,.38); }
+    footer { display:flex; justify-content:space-between; gap:20px; color:#687993; font-size:10px; line-height:1.6; margin-top:26px; }
+    footer a { color:#8ca9dc; text-decoration:none; }
+    .hidden { display:none !important; }
+    @media (max-width: 850px) {
+      .layout { grid-template-columns:1fr; }
+      .hero { align-items:flex-start; flex-direction:column; }
+      .hero-side { text-align:left; max-width:none; }
+      header { margin-bottom:34px; }
+      .library-empty { min-height:280px; }
+    }
+    @media (max-width: 560px) {
+      .shell { width:calc(100% - 24px); padding-top:15px; }
+      header { margin-bottom:28px; }
+      .local-chip { display:none; }
+      .panel { border-radius:17px; }
+      .panel-head,.panel-body { padding-left:16px; padding-right:16px; }
+      .book-grid { grid-template-columns:1fr; padding-left:13px; padding-right:13px; }
+      .library-toolbar { padding:12px; flex-wrap:wrap; }
+      .book-actions { padding:10px 13px; }
+      .download-bar { align-items:stretch; flex-direction:column; padding:13px; }
+      .download-button { width:100%; }
+      footer { flex-direction:column; gap:7px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 5.5v16M8 7h8M8 11h8"/></svg>
+        </div>
+        <div><div class="brand-name">Schoolbook Studio</div><div class="brand-sub">La tua libreria, in PDF</div></div>
+      </div>
+      <div class="top-right"><div class="local-chip"><span class="live-dot"></span> Servizio locale attivo</div></div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Digital book workspace</div>
+        <h1>Dalla libreria<br><span>al tuo PDF.</span></h1>
+        <p class="hero-copy">Accedi al tuo editore, visualizza i libri disponibili e avvia più download dalla stessa schermata. Tutto sotto controllo, senza terminali.</p>
+      </div>
+      <div class="hero-side"><strong>01 — 02 — 03</strong>Collega l'account · Scegli i libri · Scarica</div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-head"><div class="panel-title">Collega la tua libreria</div><span class="step">STEP 01</span></div>
+        <div class="panel-body">
+          <form id="loginForm">
+            <div class="field">
+              <label for="publisher">Editore</label>
+              <div class="input-wrap"><select id="publisher" required><option value="">Caricamento editori…</option></select><span class="select-arrow">⌄</span></div>
+            </div>
+            <div id="credentialFields">
+              <div class="field">
+                <label for="username">Email o username</label>
+                <input id="username" name="username" type="text" autocomplete="username" placeholder="nome@scuola.it" required>
+              </div>
+              <div class="field">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" placeholder="La password del tuo account" required>
+              </div>
+            </div>
+            <div id="publicNote" class="hint hidden">Questo catalogo è pubblico nel codice sorgente del progetto: non servono email o password.</div>
+            <button id="loginButton" class="button primary" type="submit"><span>Accedi e carica libri</span><span aria-hidden="true">→</span></button>
+          </form>
+          <div class="privacy"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>La password viene usata solo per l'accesso. Non viene salvata su disco. Il token resta in memoria fino alla scadenza o al riavvio del servizio.</span></div>
+          <div id="loggedBox" class="logged">
+            <div class="logged-top"><span class="live-dot"></span> Libreria collegata</div>
+            <div id="loggedName" class="logged-name"></div>
+            <button id="logoutButton" type="button" class="button ghost">Disconnetti account</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="right-column">
+        <section class="panel">
+          <div class="panel-head"><div class="panel-title">I tuoi libri</div><span class="step">STEP 02</span></div>
+          <div id="libraryEmpty" class="library-empty">
+            <div>
+              <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 5.5v16M8 7h8M8 11h6"/></svg></div>
+              <div class="empty-title">La tua libreria ti aspetta</div>
+              <p class="empty-copy">Scegli un editore e accedi con il tuo account. I libri disponibili appariranno qui, pronti da selezionare.</p>
+            </div>
+          </div>
+          <div id="libraryContent" class="library-content">
+            <div class="library-toolbar">
+              <input id="bookSearch" class="search" type="search" placeholder="Cerca un libro per titolo…" aria-label="Cerca libri">
+              <span id="bookCount" class="count">0 libri</span>
+            </div>
+            <div class="book-actions">
+              <div class="action-left"><button id="selectAll" class="button ghost" type="button">Seleziona tutti</button><button id="selectNone" class="button ghost" type="button">Azzera</button></div>
+              <span id="selectedCountTop" class="count">0 selezionati</span>
+            </div>
+            <div id="bookGrid" class="book-grid"></div>
+            <div class="download-bar">
+              <span id="selectionNote" class="selection-note">Seleziona uno o più libri per iniziare.</span>
+              <button id="downloadButton" class="button download-button" type="button" disabled><span>Avvia download</span><span aria-hidden="true">↓</span></button>
+            </div>
+          </div>
+        </section>
+
+        <section id="jobsPanel" class="panel jobs-panel">
+          <div class="jobs-head"><div><div class="panel-title">Download in corso</div><div class="hint" style="margin-top:4px">I file completati restano nella cartella data/downloads.</div></div><span class="step">STEP 03</span></div>
+          <div id="jobsList" class="jobs-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <footer>
+      <span>Schoolbook Studio · Interfaccia locale per il progetto schoolbook_to_pdf.</span>
+      <span>Usa il servizio solo per libri a cui hai diritto di accesso e nel rispetto delle condizioni dell'editore.</span>
+    </footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let publishers = [];
+    let libraryBooks = [];
+    let selected = new Set();
+    let pollHandle = null;
+    let pollBusy = false;
+    let toastHandle = null;
+
+    function showToast(message, error = false) {
+      const box = $('toast');
+      box.textContent = message;
+      box.className = 'toast show' + (error ? ' error' : '');
+      clearTimeout(toastHandle);
+      toastHandle = setTimeout(() => box.classList.remove('show'), 4400);
+    }
+
+    async function api(url, options = {}) {
+      const response = await fetch(url, {
+        credentials: 'same-origin',
+        ...options,
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || `Errore HTTP ${response.status}`);
+      return data;
+    }
+
+    function currentPublisher() {
+      return publishers.find(item => item.code === $('publisher').value);
+    }
+
+    function updatePublisherFields() {
+      const publisher = currentPublisher();
+      const requires = !publisher || publisher.requires_credentials;
+      $('credentialFields').classList.toggle('hidden', !requires);
+      $('publicNote').classList.toggle('hidden', requires);
+      $('username').required = requires;
+      $('password').required = requires;
+    }
+
+    async function loadPublishers() {
+      try {
+        publishers = await api('/api/publishers');
+        $('publisher').innerHTML = '<option value="">Seleziona un editore…</option>' + publishers.map(item =>
+          `<option value="${item.code}">${escapeHtml(item.name)}</option>`
+        ).join('');
+        $('publisher').addEventListener('change', updatePublisherFields);
+        updatePublisherFields();
+      } catch (error) {
+        showToast('Impossibile caricare la lista editori: ' + error.message, true);
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    }
+
+    function setLoggedIn(publisherName) {
+      $('loggedBox').style.display = 'block';
+      $('loggedName').textContent = publisherName;
+      $('loginButton').classList.add('hidden');
+      $('publisher').disabled = true;
+      $('username').disabled = true;
+      $('password').disabled = true;
+    }
+
+    function setLoggedOut() {
+      $('loggedBox').style.display = 'none';
+      $('loginButton').classList.remove('hidden');
+      $('publisher').disabled = false;
+      $('username').disabled = false;
+      $('password').disabled = false;
+      $('password').value = '';
+      $('libraryEmpty').style.display = 'grid';
+      $('libraryContent').style.display = 'none';
+      libraryBooks = [];
+      selected.clear();
+      renderBooks();
+    }
+
+    function showLibrary(data) {
+      libraryBooks = data.books || [];
+      selected.clear();
+      setLoggedIn(data.publisher);
+      $('libraryEmpty').style.display = 'none';
+      $('libraryContent').style.display = 'block';
+      $('bookSearch').value = '';
+      renderBooks();
+      if (!libraryBooks.length) showToast('Accesso riuscito, ma la libreria non contiene libri visibili.', true);
+      else showToast(`${libraryBooks.length} libr${libraryBooks.length === 1 ? 'o caricato' : 'i caricati'} correttamente.`);
+    }
+
+    $('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const publisher = currentPublisher();
+      if (!publisher) return showToast('Seleziona prima un editore.', true);
+      const button = $('loginButton');
+      button.disabled = true;
+      button.querySelector('span').textContent = 'Connessione…';
+      try {
+        const data = await api('/api/login', { method:'POST', body:JSON.stringify({
+          service: publisher.code,
+          username: publisher.requires_credentials ? $('username').value.trim() : '',
+          password: publisher.requires_credentials ? $('password').value : ''
+        })});
+        $('password').value = '';
+        showLibrary(data);
+      } catch (error) {
+        showToast(error.message, true);
+      } finally {
+        button.disabled = false;
+        button.querySelector('span').textContent = 'Accedi e carica libri';
+      }
+    });
+
+    function renderBooks() {
+      const query = $('bookSearch').value.trim().toLocaleLowerCase('it');
+      const visible = libraryBooks.filter(book => book.title.toLocaleLowerCase('it').includes(query));
+      $('bookCount').textContent = `${libraryBooks.length} libr${libraryBooks.length === 1 ? 'o' : 'i'}`;
+      $('bookGrid').innerHTML = visible.map(book => {
+        const isSelected = selected.has(book.id);
+        return `<label class="book-card ${isSelected ? 'selected' : ''}">
+          <input type="checkbox" data-book-id="${escapeHtml(book.id)}" ${isSelected ? 'checked' : ''}>
+          <span class="book-info"><span class="book-title">${escapeHtml(book.title)}</span><span class="book-meta">ID ${escapeHtml(book.id)}</span></span>
+        </label>`;
+      }).join('');
+      $('bookGrid').querySelectorAll('input[data-book-id]').forEach(input => {
+        input.addEventListener('change', () => {
+          const id = input.dataset.bookId;
+          if (input.checked) selected.add(id); else selected.delete(id);
+          renderBooks();
+        });
+      });
+      $('selectedCountTop').textContent = `${selected.size} selezionat${selected.size === 1 ? 'o' : 'i'}`;
+      $('selectionNote').textContent = selected.size ? `${selected.size} libr${selected.size === 1 ? 'o selezionato' : 'i selezionati'} · download in parallelo` : 'Seleziona uno o più libri per iniziare.';
+      $('downloadButton').disabled = selected.size === 0;
+      $('downloadButton').querySelector('span').textContent = selected.size ? `Scarica ${selected.size} libr${selected.size === 1 ? 'o' : 'i'}` : 'Avvia download';
+    }
+
+    $('bookSearch').addEventListener('input', renderBooks);
+    $('selectAll').addEventListener('click', () => { libraryBooks.forEach(book => selected.add(book.id)); renderBooks(); });
+    $('selectNone').addEventListener('click', () => { selected.clear(); renderBooks(); });
+
+    $('downloadButton').addEventListener('click', async () => {
+      if (!selected.size) return;
+      const button = $('downloadButton');
+      button.disabled = true;
+      button.querySelector('span').textContent = 'Invio in coda…';
+      try {
+        const result = await api('/api/downloads', { method:'POST', body:JSON.stringify({book_ids:[...selected]}) });
+        showToast(`${result.queued} download mess${result.queued === 1 ? 'o' : 'i'} in coda · ${result.parallel_workers} processi paralleli.`);
+        selected.clear();
+        renderBooks();
+        $('jobsPanel').style.display = 'block';
+        await refreshJobs();
+        startPolling();
+      } catch (error) {
+        showToast(error.message, true);
+      } finally {
+        button.disabled = selected.size === 0;
+        renderBooks();
+      }
+    });
+
+    async function refreshJobs() {
+      if (pollBusy) return;
+      pollBusy = true;
+      try {
+        const jobs = await api('/api/jobs');
+        $('jobsPanel').style.display = jobs.length ? 'block' : 'none';
+        $('jobsList').innerHTML = jobs.map(job => {
+          const statusLabel = {queued:'In coda',running:'In corso',completed:'Completato',failed:'Errore'}[job.status] || job.status;
+          const link = job.status === 'completed' ? `<a class="file-link" href="/api/jobs/${encodeURIComponent(job.id)}/file">Scarica PDF ↗</a>` : '';
+          return `<div class="job">
+            <div class="job-top"><div><div class="job-title">${escapeHtml(job.title)}</div><div class="job-message">${escapeHtml(job.message || '')}</div></div><span class="job-status ${job.status}">${statusLabel}</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:${Math.max(0,Math.min(100,job.progress || 0))}%"></div></div>
+            <div class="job-bottom"><span class="job-percent">${job.progress || 0}%</span>${link}</div>
+          </div>`;
+        }).join('');
+        if (jobs.some(job => job.status === 'queued' || job.status === 'running')) return true;
+        return false;
+      } catch (error) {
+        if (error.message.includes('Sessione terminata')) setLoggedOut();
+        return false;
+      } finally {
+        pollBusy = false;
+      }
+    }
+
+    function startPolling() {
+      if (pollHandle) clearInterval(pollHandle);
+      pollHandle = setInterval(async () => {
+        const active = await refreshJobs();
+        if (!active) { clearInterval(pollHandle); pollHandle = null; }
+      }, 1400);
+    }
+
+    $('logoutButton').addEventListener('click', async () => {
+      try { await api('/api/logout', {method:'POST', body:'{}'}); } catch (_) {}
+      if (pollHandle) clearInterval(pollHandle);
+      $('jobsPanel').style.display = 'none';
+      $('jobsList').innerHTML = '';
+      setLoggedOut();
+      showToast('Account disconnesso.');
+    });
+
+    async function restoreSession() {
+      try {
+        const data = await api('/api/books');
+        const matchingPublisher = publishers.find(item => item.name === data.publisher);
+        if (matchingPublisher) $('publisher').value = matchingPublisher.code;
+        updatePublisherFields();
+        libraryBooks = data.books || [];
+        setLoggedIn(data.publisher);
+        $('libraryEmpty').style.display = 'none';
+        $('libraryContent').style.display = 'block';
+        renderBooks();
+        const active = await refreshJobs();
+        if (active) startPolling();
+      } catch (_) { /* first visit or expired in-memory session */ }
+    }
+
+    loadPublishers().then(restoreSession);
+  </script>
+</body>
+</html>
