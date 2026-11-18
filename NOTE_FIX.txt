@@ -1,0 +1,25 @@
+CORREZIONI APPLICATE
+
+1. Raffaello Player: le risposte HTTP vuote o non JSON vengono segnalate con un errore
+   leggibile (endpoint, codice HTTP e Content-Type) invece di generare un traceback
+   JSONDecodeError.
+2. Le richieste Raffaello hanno un timeout e gestiscono gli errori di connessione.
+3. Il login verifica che la risposta contenga token e ID utente.
+4. Corretta la funzione cover(): prima usava una variabile "url" non definita.
+5. La CLI mostra gli errori operativi senza chiudersi; per il traceback tecnico impostare
+   Debug = true nella sezione [pdfgrabber] di config.ini.
+
+IMPORTANTE
+
+Questa correzione rende chiaro il problema e previene il crash, ma non può ripristinare
+un endpoint del server che l'editore abbia dismesso o modificato. Il modulo originale
+usa /media/raffaelloplayer/login.php. Se l'accesso dal sito ufficiale funziona ma
+questo programma continua a ricevere una risposta vuota o non JSON, il sistema di login
+usato da questa vecchia versione dello script non è più compatibile e serve un
+aggiornamento ufficiale/compatibile dell'integrazione.
+
+Dopo l'estrazione:
+  py -m pip install -r requirements.txt
+  py main.py
+
+Non condividere password o token nei log e negli screenshot.

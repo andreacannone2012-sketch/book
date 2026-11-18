@@ -1,0 +1,10 @@
+pymupdf
+rich
+requests
+pycryptodome
+u-msgpack-python
+tinydb
+playwright
+lxml
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1

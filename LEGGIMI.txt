@@ -1,0 +1,34 @@
+SCHOOLBOOK STUDIO - istruzioni rapide (via GitHub + GUI ZimaOS)
+================================================================
+
+Stesso sistema di lavagna-ai: GitHub costruisce l'immagine Docker
+e la pubblica su ghcr.io, la GUI di ZimaOS scarica quella.
+
+PASSO 1 - Crea il repository
+   - github.com > New repository (es. "schoolbook-studio")
+   - Carica TUTTO il contenuto della cartella, compresa la cartella
+     nascosta .github/workflows, services e static
+
+PASSO 2 - Build automatica
+   - Scheda "Actions": il workflow parte da solo
+   - La prima build e piu lenta (scarica Chromium di Playwright): 5-10 minuti
+   - Se il job fallisce, apri il log e mandamelo
+
+PASSO 3 - Pacchetto pubblico
+   - GitHub > profilo > Packages > schoolbook-studio > Package settings
+     > Change visibility > Public
+
+PASSO 4 - Prepara il docker-compose.yml
+   - Sostituisci OWNER/REPO con "tuo-utente/schoolbook-studio" (minuscolo)
+
+PASSO 5 - Incolla in ZimaOS
+   - GUI ZimaOS > Docker/Compose > incolla il docker-compose.yml
+   - Apri http://IP-DEL-NAS:8431
+
+NOTE
+   - La porta e 8431 per non sovrapporsi a lavagna-ai (8430) e immich-kiosk (3000)
+   - I PDF finiscono in /DATA/AppData/schoolbook-studio/downloads
+   - Aggiornamenti: carica i file nuovi su GitHub, aspetta la build,
+     poi in ZimaOS aggiorna/ricrea il container per scaricare :latest
+   - Non esporre la porta su Internet; per accesso remoto usa VPN o reverse proxy con HTTPS
+     (in quel caso aggiungi COOKIE_SECURE=1 nelle environment)
