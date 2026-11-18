@@ -1,4 +1,5 @@
-FROM python:3.11-slim
+# Usa l'immagine ufficiale di Microsoft Playwright con Python
+FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -6,13 +7,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
-    && rm -rf /var/lib/apt/lists/*
-
+# Copia e installa le dipendenze Python
 COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt \
-    && python -m playwright install --with-deps chromium
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copia il resto dell'applicazione
 COPY . .
 RUN mkdir -p /data/downloads
 
